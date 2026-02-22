@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advisory Circle — Regen-Tech Platform</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --earth: #2C1A0E;
+    --bark: #4A2C1A;
+    --clay: #8B4513;
+    --ochre: #C8860A;
+    --gold: #E6A817;
+    --moss: #3D6B3F;
+    --sage: #6B8F5E;
+    --mist: #B8C9A3;
+    --sky: #7BB5C9;
+    --sand: #F2E4C4;
+    --parchment: #FAF3E0;
+    --ash: #D4C5A9;
+    --alive: #E8D5B0;
+    --ancestral: #2C3E30;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--earth);
+    color: var(--sand);
+    font-family: 'Crimson Pro', Georgia, serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Organic background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at 20% 30%, rgba(61,107,63,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 70%, rgba(200,134,10,0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(74,44,26,0.3) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 1rem;
+    animation: fadeUp 1s ease both;
+  }
+
+  .header .subtitle {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--ochre);
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+
+  .header h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem, 4vw, 2.6rem);
+    font-weight: 400;
+    color: var(--gold);
+    line-height: 1.2;
+    text-shadow: 0 2px 20px rgba(230,168,23,0.3);
+    margin-bottom: 0.6rem;
+  }
+
+  .header .tagline {
+    font-style: italic;
+    color: var(--ash);
+    font-size: 1rem;
+    font-weight: 300;
+  }
+
+  /* Decorative divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    opacity: 0.6;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--ochre), transparent);
+  }
+  .divider-symbol {
+    color: var(--ochre);
+    font-size: 1rem;
+  }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+    animation: fadeUp 1s 0.2s ease both;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+  }
+  .legend-dot.living { background: var(--moss); border-color: var(--sage); color: var(--sage); }
+  .legend-dot.ancestral { background: var(--bark); border-color: var(--gold); color: var(--gold); }
+  .legend-dot.center { background: var(--clay); border-color: var(--ochre); color: var(--ochre); }
+
+  /* DOMAIN SECTIONS */
+  .domains-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+  }
+
+  .domain {
+    background: rgba(74,44,26,0.35);
+    border: 1px solid rgba(200,134,10,0.25);
+    border-radius: 8px;
+    padding: 1.2rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    animation: fadeUp 1s ease both;
+  }
+  .domain:hover {
+    transform: translateY(-2px);
+    border-color: rgba(200,134,10,0.6);
+  }
+  .domain::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--domain-color, var(--ochre));
+  }
+
+  .domain-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+  }
+  .domain-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .domain-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--domain-color, var(--ochre));
+    line-height: 1.4;
+  }
+
+  .advisors-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .advisor-card {
+    display: grid;
+    grid-template-columns: 8px 1fr;
+    gap: 0.8rem;
+    align-items: start;
+    padding: 0.7rem;
+    border-radius: 5px;
+    transition: background 0.2s ease;
+  }
+  .advisor-card:hover {
+    background: rgba(255,255,255,0.04);
+  }
+  .advisor-card.living {
+    border-left: 2px solid var(--sage);
+  }
+  .advisor-card.ancestral {
+    border-left: 2px solid var(--gold);
+    opacity: 0.85;
+  }
+
+  .advisor-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .advisor-card.living .advisor-dot { background: var(--sage); }
+  .advisor-card.ancestral .advisor-dot { background: var(--gold); }
+
+  .advisor-info { grid-column: 2; }
+
+  .advisor-name {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--alive);
+    line-height: 1.2;
+  }
+  .advisor-card.ancestral .advisor-name {
+    color: var(--ash);
+    font-style: italic;
+  }
+  .advisor-card.ancestral .advisor-name::after {
+    content: ' ✦';
+    color: var(--gold);
+    font-size: 0.6rem;
+    font-style: normal;
+  }
+
+  .advisor-role {
+    font-size: 0.75rem;
+    color: var(--ash);
+    line-height: 1.3;
+    margin-top: 0.1rem;
+    opacity: 0.8;
+  }
+
+  .advisor-why {
+    font-size: 0.72rem;
+    color: var(--mist);
+    line-height: 1.4;
+    margin-top: 0.25rem;
+    font-style: italic;
+    opacity: 0.7;
+  }
+
+  /* CENTER VISION */
+  .center-vision {
+    background: radial-gradient(ellipse at center, rgba(139,69,19,0.4) 0%, rgba(44,26,14,0.8) 70%);
+    border: 1px solid var(--ochre);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    margin: 2rem 0;
+    position: relative;
+    animation: fadeUp 1s 0.1s ease both;
+  }
+  .center-vision::before, .center-vision::after {
+    content: '◈';
+    position: absolute;
+    color: var(--ochre);
+    font-size: 1rem;
+    opacity: 0.5;
+  }
+  .center-vision::before { top: 0.8rem; left: 1rem; }
+  .center-vision::after { bottom: 0.8rem; right: 1rem; }
+
+  .vision-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: var(--ochre);
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+  }
+  .vision-statement {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(0.85rem, 2vw, 1.15rem);
+    color: var(--gold);
+    line-height: 1.5;
+    font-weight: 400;
+  }
+  .vision-sub {
+    margin-top: 0.7rem;
+    font-style: italic;
+    color: var(--ash);
+    font-size: 0.85rem;
+  }
+
+  /* PRINCIPLES */
+  .principles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.8rem;
+    margin-top: 2rem;
+    animation: fadeUp 1s 0.4s ease both;
+  }
+  .principle {
+    text-align: center;
+    padding: 0.8rem;
+    border: 1px solid rgba(200,134,10,0.2);
+    border-radius: 6px;
+    background: rgba(44,26,14,0.5);
+  }
+  .principle-icon { font-size: 1.3rem; margin-bottom: 0.3rem; }
+  .principle-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ochre);
+    margin-bottom: 0.2rem;
+  }
+  .principle-desc {
+    font-size: 0.73rem;
+    color: var(--ash);
+    font-style: italic;
+  }
+
+  /* FOOTER NOTE */
+  .footer-note {
+    text-align: center;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(200,134,10,0.2);
+    font-size: 0.75rem;
+    color: var(--ash);
+    font-style: italic;
+    opacity: 0.6;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Stagger domain cards */
+  .domain:nth-child(1) { animation-delay: 0.15s; }
+  .domain:nth-child(2) { animation-delay: 0.25s; }
+  .domain:nth-child(3) { animation-delay: 0.35s; }
+  .domain:nth-child(4) { animation-delay: 0.45s; }
+  .domain:nth-child(5) { animation-delay: 0.55s; }
+  .domain:nth-child(6) { animation-delay: 0.65s; }
+  .domain:nth-child(7) { animation-delay: 0.75s; }
+  .domain:nth-child(8) { animation-delay: 0.85s; }
+
+  /* Tooltip placeholder */
+  .placeholder-tag {
+    display: inline-block;
+    background: rgba(230,168,23,0.12);
+    border: 1px dashed rgba(230,168,23,0.4);
+    border-radius: 3px;
+    padding: 0 0.3rem;
+    font-size: 0.65rem;
+    color: var(--gold);
+    font-family: 'Space Mono', monospace;
+    vertical-align: middle;
+    margin-left: 0.3rem;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="subtitle">Regen-Tech Platform · Advisory Circle</div>
+    <h1>Council of Stewards</h1>
+    <div class="tagline">Those who walk with us — in body and in spirit</div>
+  </div>
+
+  <div class="divider"><span class="divider-symbol">⊕</span></div>
+
+  <div class="center-vision">
+    <div class="vision-label">Platform North Star</div>
+    <div class="vision-statement">Land is education. Land is home. Land is food.<br>We make it probable that the land-poor are supported<br>and that wealth flows where life grows.</div>
+    <div class="vision-sub">Southeast Asia &amp; Pacific · Indigenous-first · Women-centered · Regenerative by design</div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot living"></div> Living Advisor (to recruit)</div>
+    <div class="legend-item"><div class="legend-dot ancestral"></div> Ancestral Advisor ✦ (guiding spirit)</div>
+  </div>
+
+  <div class="domains-grid">
+
+    <!-- 1. Indigenous Land Rights -->
+    <div class="domain" style="--domain-color: #C8A045;">
+      <div class="domain-header">
+        <div class="domain-icon">🌏</div>
+        <div class="domain-title">Indigenous Land Rights<br>&amp; Sovereignty</div>
+      </div>
+      <div class="advisors-list">
+        <div class="advisor-card living">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Victoria Tauli-Corpuz</div>
+            <div class="advisor-role">Kankanaey Igorot leader; former UN Special Rapporteur on Indigenous Peoples' Rights; founder, Tebtebba Foundation · Philippines</div>
+            <div class="advisor-why">Drafted the UN Declaration on the Rights of Indigenous Peoples. Bridges grassroots activism with international law. Direct SE Asia grounding.</div>
+          </div>
+        </div>
+        <div class="advisor-card living">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Mina Setra</div>
+            <div class="advisor-role">Deputy Secretary-General, AMAN (Indigenous Peoples Alliance of the Archipelago) · Indonesia</div>
+            <div class="advisor-why">Leading advocate for adat (customary land) rights across 17,000+ Indonesian islands. Essential for archipelago context.</div>
+          </div>
+        </div>
+        <div class="advisor-card ancestral">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Te Whiti o Rongomai</div>
+            <div class="advisor-role">Māori prophet &amp; nonviolent land defender · Aotearoa, 1820s–1907</div>
+            <div class="advisor-why">Embodied radical nonviolent resistance to land confiscation. His people ploughed contested land as peaceful protest — the original regen act.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Regenerative Agriculture -->
+    <div class="domain" style="--domain-color: #5D9B4E;">
+      <div class="domain-header">
+        <div class="domain-icon">🌱</div>
+        <div class="domain-title">Regenerative Agriculture<br>&amp; Ecology</div>
+      </div>
+      <div class="advisors-list">
+        <div class="advisor-card living">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Vandana Shiva</div>
+            <div class="advisor-role">Physicist turned seed sovereignty activist; founder, Navdanya · India</div>
+            <div class="advisor-why">40 years defending traditional farming systems and biodiversity against industrial agriculture. Her framing of "earth democracy" aligns perfectly.</div>
+          </div>
+        </div>
+        <div class="advisor-card living">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Deni Bram</div>
+            <div class="advisor-role">Environmental law expert &amp; agroforestry advocate · Indonesia</div>
+            <div class="advisor-why">Bridges legal frameworks with indigenous ecological practice in the Nusantara context. Practical on-the-ground insight.</div>
+          </div>
+        </div>
+        <div class="advisor-card ancestral">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Wangari Maathai</div>
+            <div class="advisor-role">Nobel laureate; founder, Green Belt Movement · Kenya, 1940–2011</div>
+            <div class="advisor-why">Proved that reforestation + women's economic empowerment are the same act. The philosophical grandmother of this platform.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Tech, Platform Design & Ethics -->
+    <div class="domain" style="--domain-color: #7BB5C9;">
+      <div class="domain-header">
+        <div class="domain-icon">⚙️</div>
+        <div class="domain-title">Tech, Platform Design<br>&amp; Ethics</div>
+      </div>
+      <div class="advisors-list">
+        <div class="advisor-card living">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Safiya Umoja Noble</div>
+            <div class="advisor-role">Author, "Algorithms of Oppression"; professor, UCLA Information Studies · USA</div>
+            <div class="advisor-why">Essential voice on how platforms encode bias. Ensures your tech architecture doesn't reproduce extractive patterns under a green veneer.</div>
+          </div>
+        </div>
+        <div class="advisor-card living">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Suhui Yap</div>
+            <div class="advisor-role">Tech for good practitioner; founder of community-centered digital platforms · Southeast Asia</div>
+            <div class="advisor-why">Brings SE Asian tech ecosystem knowledge with community co-design methodology. Critical for regional product-market fit.</div>
+          </div>
+        </div>
+        <div class="advisor-card ancestral">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Ada Lovelace</div>
+            <div class="advisor-role">Pioneer of computation; the first algorithm · England, 1815–1852</div>
+            <div class="advisor-why">A reminder that technology was always meant to extend human imagination, not replace human dignity. Our code should be poetry.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Finance & Microfinance -->
+    <div class="domain" style="--domain-color: #C8860A;">
+      <div class="domain-header">
+        <div class="domain-icon">🌊</div>
+        <div class="domain-title">Finance, Microfinance<br>&amp; Impact Investing</div>
+      </div>
+      <div class="advisors-list">
+        <div class="advisor-card living">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Arjuna Mahendran</div>
+            <div class="advisor-role">Former central banker; impact finance advisor · Sri Lanka / Singapore</div>
+            <div class="advisor-why">Navigates formal financial systems while centering alternative economy models. Key for exchange-rate-sensitive microfinance design.</div>
+          </div>
+        </div>
+        <div class="advisor-card living">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Durreen Shahnaz</div>
+            <div class="advisor-role">Founder, Impact Investment Exchange (IIX); pioneer of women's livelihood bonds · Singapore</div>
+            <div class="advisor-why">Created the world's first social stock exchange in Asia. Proven model of channeling global capital to marginalized women communities.</div>
+          </div>
+        </div>
+        <div class="advisor-card ancestral">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Fannie Lou Hamer</div>
+            <div class="advisor-role">Sharecropper, organizer &amp; founder of Freedom Farm Cooperative · Mississippi USA, 1917–1977</div>
+            <div class="advisor-why">"Nobody's free until everybody's free." Fed 1,500 families through land cooperative economics. The original proof of concept for this platform.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Education & Knowledge Sovereignty -->
+    <div class="domain" style="--domain-color: #A67C52;">
+      <div class="domain-header">
+        <div class="domain-icon">📖</div>
+        <div class="domain-title">Education &amp;<br>Knowledge Sovereignty</div>
+      </div>
+      <div class="advisors-list">
+        <div class="advisor-card living">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Manulani Aluli Meyer</div>
+            <div class="advisor-role">Indigenous education philosopher; Professor Emerita · Hawai'i</div>
+            <div class="advisor-why">Her work on "epistemological pluralism" — that Indigenous ways of knowing are complete systems, not supplements — is the foundation of any ethical ed platform.</div>
+          </div>
+        </div>
+        <div class="advisor-card living">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Ratu Naiqama Lalabalavu</div>
+            <div class="advisor-role">Fijian traditional knowledge holder &amp; governance leader · Fiji</div>
+            <div class="advisor-why">Represents the Pacific custodial tradition of mataqali (clan) land stewardship — directly relevant to platform design for Pacific markets.</div>
+          </div>
+        </div>
+        <div class="advisor-card ancestral">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Paulo Freire</div>
+            <div class="advisor-role">Author, "Pedagogy of the Oppressed" · Brazil, 1921–1997</div>
+            <div class="advisor-why">Education as liberation, not domestication. His "conscientização" — critical consciousness through experience — should shape every learning module.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Feminism & Women-Led Economics -->
+    <div class="domain" style="--domain-color: #C97A8A;">
+      <div class="domain-header">
+        <div class="domain-icon">🌺</div>
+        <div class="domain-title">Feminism &amp;<br>Women-Led Economics</div>
+      </div>
+      <div class="advisors-list">
+        <div class="advisor-card living">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Sylvia Tamale</div>
+            <div class="advisor-role">Legal scholar, feminist activist &amp; author · Uganda / Pan-African</div>
+            <div class="advisor-why">Centres African feminist thought in decolonial economics. Challenges the narrative that land rights are gender-neutral.</div>
+          </div>
+        </div>
+        <div class="advisor-card living">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Bina Agarwal</div>
+            <div class="advisor-role">Development economist; author of "A Field of One's Own: Gender and Land Rights in South Asia" · India</div>
+            <div class="advisor-why">The definitive researcher on women, land, and power in Asia. Her evidence base is what you need to make the case to funders.</div>
+          </div>
+        </div>
+        <div class="advisor-card ancestral">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Kartini (Raden Adjeng)</div>
+            <div class="advisor-role">Javanese feminist pioneer; advocate for women's education &amp; emancipation · Indonesia, 1879–1904</div>
+            <div class="advisor-why">Indonesia's own daughter who saw land, education, and women's liberation as one movement. Kartini Day (April 21) is still national holiday in Indonesia.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. Pacific / SE Asia Regional Expertise -->
+    <div class="domain" style="--domain-color: #4A90A4;">
+      <div class="domain-header">
+        <div class="domain-icon">🐚</div>
+        <div class="domain-title">Pacific / Southeast Asia<br>Regional Expertise</div>
+      </div>
+      <div class="advisors-list">
+        <div class="advisor-card living">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Epeli Hau'ofa</div>
+            <div class="advisor-role">Tongan anthropologist &amp; author; coined "Our Sea of Islands" paradigm · Tonga / Fiji, 1939–2009 ✦</div>
+            <div class="advisor-why">Reframed the Pacific from "small island states" to a vast ocean civilization. Your platform needs this worldview: abundance, not scarcity.</div>
+          </div>
+        </div>
+        <div class="advisor-card living">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Grace Mera Molisa</div>
+            <div class="advisor-role">Poet, feminist &amp; founding civil servant of Vanuatu · 1956–2002 ✦</div>
+            <div class="advisor-why">Melanesian voice on the intersection of decolonization, land, women's rights, and cultural identity — in verse form, no less.</div>
+          </div>
+        </div>
+        <div class="advisor-card living">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Chaiwat Satha-Anand</div>
+            <div class="advisor-role">Thai peace scholar; nonviolent social change practitioner · Thailand</div>
+            <div class="advisor-why">Expertise in navigating fractured SE Asian political contexts while building trust-based community structures. Critical for conflict-sensitive platform design.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. Play -->
+    <div class="domain" style="--domain-color: #E8C547;">
+      <div class="domain-header">
+        <div class="domain-icon">🎭</div>
+        <div class="domain-title">Play, Joy &amp;<br>Living Culture</div>
+      </div>
+      <div class="advisors-list">
+        <div class="advisor-card living">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Guillermo Gomez-Peña</div>
+            <div class="advisor-role">Performance artist, cultural provocateur &amp; border activist · Mexico / USA</div>
+            <div class="advisor-why">Turns serious political work into radical, joyful, embodied experience. Ensures your platform never becomes a guilt-trip — but a celebration.</div>
+          </div>
+        </div>
+        <div class="advisor-card living">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Aroha Yates-Smith</div>
+            <div class="advisor-role">Māori music &amp; language revivalist; waiata (song) as healing practice · Aotearoa</div>
+            <div class="advisor-why">Grounds play in Indigenous cultural practice — song, story, movement as the oldest technologies of community trust-building.</div>
+          </div>
+        </div>
+        <div class="advisor-card ancestral">
+          <div class="advisor-dot"></div>
+          <div class="advisor-info">
+            <div class="advisor-name">Stuart Brown</div>
+            <div class="advisor-role">Psychiatrist &amp; founder, National Institute for Play · USA, 1933–2024</div>
+            <div class="advisor-why">Proved scientifically that play is not trivial — it is how mammals build trust, resilience, and community. The domain you added last matters most.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end domains-grid -->
+
+  <!-- Guiding Principles -->
+  <div class="divider"><span class="divider-symbol">◈</span></div>
+  <div class="vision-label" style="text-align:center; margin-bottom:1rem;">Governance Principles This Council Upholds</div>
+  <div class="principles">
+    <div class="principle">
+      <div class="principle-icon">🤝</div>
+      <div class="principle-name">FPIC</div>
+      <div class="principle-desc">Free, Prior &amp; Informed Consent in all community engagements</div>
+    </div>
+    <div class="principle">
+      <div class="principle-icon">🔄</div>
+      <div class="principle-name">Reciprocity</div>
+      <div class="principle-desc">Exchange — not charity, not extraction</div>
+    </div>
+    <div class="principle">
+      <div class="principle-icon">👩‍🌾</div>
+      <div class="principle-name">Women-First</div>
+      <div class="principle-desc">Land stewardship flows through women. So does power.</div>
+    </div>
+    <div class="principle">
+      <div class="principle-icon">🎲</div>
+      <div class="principle-name">Play</div>
+      <div class="principle-desc">Joy is not decoration. It is the infrastructure of trust.</div>
+    </div>
+    <div class="principle">
+      <div class="principle-icon">🌀</div>
+      <div class="principle-name">Slow Capital</div>
+      <div class="principle-desc">Exchange rates matter. Patience is a financial instrument.</div>
+    </div>
+    <div class="principle">
+      <div class="principle-icon">📿</div>
+      <div class="principle-name">Ancestral Accountability</div>
+      <div class="principle-desc">We answer to those who came before and those yet to come.</div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    ✦ marks those who advise us across the threshold · This map is living — names in your heart belong here too · Version 0.1 · Draft for refinement
+  </div>
+
+</div>
+</body>
+</html>
